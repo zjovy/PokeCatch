@@ -1,10 +1,11 @@
-
-function App() {
-
+const App = () => {
+  
   return (
-      <h1 className="text-3xl font-bold underline">
-        Hello world!
+    <div className="flex items-center justify-center min-h-screen">
+      <h1 className="font-press2p text-3xl">
+        PokeCatch
       </h1>
+    </div>
   )
 }
 

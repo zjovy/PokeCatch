@@ -6,6 +6,9 @@ export default {
   ],
   theme: {
     extend: {},
+    fontFamily: {
+      press2p: ['"Press Start 2P"', 'cursive'],
+    },
   },
   plugins: [],
 }
