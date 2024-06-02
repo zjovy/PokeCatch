@@ -1,10 +1,11 @@
 import { useState } from "react";
+import { logIn } from "../services/api";
 
 const Login = ({ setLoggedIn, setUsername, onClose }) => {
   const [localUsername, setLocalUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (localUsername.trim() === "" || password.trim() === "") {
       alert("Please fill in both fields");
@@ -12,8 +13,7 @@ const Login = ({ setLoggedIn, setUsername, onClose }) => {
     }
 
     // Mock log in logic
-    console.log("Username:", localUsername);
-    console.log("Password:", password);
+    await logIn(localUsername, password);
 
     setUsername(localUsername);
     setLoggedIn(true);

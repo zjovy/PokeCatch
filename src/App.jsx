@@ -13,12 +13,15 @@ import {
 } from "./services/api";
 
 const regions = [
-  { name: "Kanto", url: "https://pokeapi.co/api/v2/region/1/" },
-  { name: "Johto", url: "https://pokeapi.co/api/v2/region/2/" },
-  { name: "Hoenn", url: "https://pokeapi.co/api/v2/region/3/" },
-  { name: "Sinnoh", url: "https://pokeapi.co/api/v2/region/4/" },
-  { name: "Unova", url: "https://pokeapi.co/api/v2/region/5/" },
-  { name: "Kalos", url: "https://pokeapi.co/api/v2/region/6/" },
+  { name: "kanto", url: "https://pokeapi.co/api/v2/pokedex/2/" },
+  { name: "johto", url: "https://pokeapi.co/api/v2/pokedex/3/" },
+  { name: "hoenn", url: "https://pokeapi.co/api/v2/pokedex/4/" },
+  { name: "sinnoh", url: "https://pokeapi.co/api/v2/pokedex/5/" },
+  { name: "unova", url: "https://pokeapi.co/api/v2/pokedex/8/" },
+  { name: "kalos", url: "https://pokeapi.co/api/v2/pokedex/12/" },
+  { name: "alola", url: "https://pokeapi.co/api/v2/pokedex/16/" },
+  { name: "galar", url: "https://pokeapi.co/api/v2/pokedex/27/" },
+  { name: "paldea", url: "https://pokeapi.co/api/v2/pokedex/31/" },
 ];
 
 const App = () => {
@@ -66,7 +69,7 @@ const App = () => {
 
   const handleRegionSelect = async (region) => {
     toggleRegionModal();
-    const data = await fetchRandomEncounter(region.url);
+    const data = await fetchRandomEncounter(region);
     setEncounteredPokemon(data);
   };
 
@@ -74,18 +77,20 @@ const App = () => {
     setFarmCount(farmCount + 1);
     if (farmCount + 1 >= 50) {
       const newPokeballs = await increasePokeballs(userId);
-      setPokeballCount(pokeballCount + newPokeballs);
+      setPokeballCount(newPokeballs);
       setFarmCount(0);
     }
   };
 
   const handleCatchPokemon = async () => {
     if (pokeballCount > 0) {
-      const success = await catchPokemon(userId, encounteredPokemon.id);
-      if (success) {
-        setPokeballCount(pokeballCount - 1);
+      const result = await catchPokemon(userId, encounteredPokemon.pokemonid);
+      if (result && result.message === "success") {
+        setPokeballCount(result.ballcount);
         alert(`You caught ${encounteredPokemon.name}!`);
         setEncounteredPokemon(null);
+      } else if (result) {
+        alert(result.message);
       } else {
         alert("Failed to catch the Pokemon. Try again!");
       }
@@ -104,7 +109,8 @@ const App = () => {
       {!isLoggedIn && (
         <>
           <h1 className="font-press2p text-3xl mb-6">
-            <span className="font-bold">Poke</span><span className="text-red-600">Catch</span>
+            <span className="font-bold">Poke</span>
+            <span className="text-red-600">Catch</span>
           </h1>
           <button
             onClick={toggleModal}
@@ -132,11 +138,14 @@ const App = () => {
                 className="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5"
               >
                 <option value="">Select Opponent</option>
-                {users.map((user) => (
-                  <option key={user.userid} value={user.userid}>
-                    {user.username}
-                  </option>
-                ))}
+                {users.map(
+                  (user) =>
+                    user !== userId && (
+                      <option key={user} value={user}>
+                        {user}
+                      </option>
+                    )
+                )}
               </select>
               <button
                 onClick={handleBattle}
@@ -180,7 +189,7 @@ const App = () => {
                 You encountered a {encounteredPokemon.name}!
               </h2>
               <img
-                src={encounteredPokemon.sprites.front_default}
+                src={encounteredPokemon.sprite}
                 alt={encounteredPokemon.name}
                 className="w-36"
               />
@@ -194,28 +203,33 @@ const App = () => {
           )}
           {battleResult && (
             <div className="mt-6 flex flex-col items-center">
-              <h2 className="text-2xl font-bold">Battle Result</h2>
-              <p>{battleResult.battleResult}</p>
-              <div className="flex space-x-4">
-                <div>
-                  <h3 className="font-bold">Your Pokemon</h3>
-                  <p>{battleResult.userPokemon.name}</p>
+              <h2 className="text-2xl font-bold mb-4">Battle Result</h2>
+              <p className="mb-4">{battleResult.battleResult}</p>
+              <div className="flex justify-center space-x-16 mb-4">
+                <div className="text-center">
+                  <h3 className="font-bold mb-2 text-green-600">Your Pokemon</h3>
+                  <p className="mb-2">{battleResult.user_pokemon.name}</p>
+                  <p className="mb-2">Power: {battleResult.user_pokemon.power}</p>
                   <img
-                    src={battleResult.userPokemon.sprite}
-                    alt={battleResult.userPokemon.name}
-                    className="w-36"
+                    src={battleResult.user_pokemon.sprite}
+                    alt={battleResult.user_pokemon.name}
+                    className="w-36 mx-auto"
                   />
                 </div>
-                <div>
-                  <h3 className="font-bold">Opponent's Pokemon</h3>
-                  <p>{battleResult.opponentPokemon.name}</p>
+                <div className="text-center">
+                  <h3 className="font-bold mb-2 text-red-600">{opponentId}'s Pokemon</h3>
+                  <p className="mb-2">{battleResult.opponent_pokemon.name}</p>
+                  <p className="mb-2">Power: {battleResult.opponent_pokemon.power}</p>
                   <img
-                    src={battleResult.opponentPokemon.sprite}
-                    alt={battleResult.opponentPokemon.name}
-                    className="w-36"
+                    src={battleResult.opponent_pokemon.sprite}
+                    alt={battleResult.opponent_pokemon.name}
+                    className="w-36 mx-auto"
                   />
                 </div>
               </div>
+              <h2 className="text-xl font-bold">
+                Winner: {battleResult.winner}!
+              </h2>
             </div>
           )}
         </div>
