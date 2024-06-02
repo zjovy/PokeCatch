@@ -36,6 +36,7 @@ const App = () => {
   const [battleResult, setBattleResult] = useState(null);
   const [farmCount, setFarmCount] = useState(0);
   const [pokeballCount, setPokeballCount] = useState(0);
+  const [selectedRegion, setSelectedRegion] = useState("");
 
   useEffect(() => {
     const getPokeballCount = async () => {
@@ -69,6 +70,7 @@ const App = () => {
 
   const handleRegionSelect = async (region) => {
     toggleRegionModal();
+    setSelectedRegion(region);
     const data = await fetchRandomEncounter(region);
     setEncounteredPokemon(data);
   };
@@ -99,9 +101,29 @@ const App = () => {
     }
   };
 
+  const rollAgain = async () => {
+    const data = await fetchRandomEncounter(selectedRegion);
+    setEncounteredPokemon(data);
+  };
+
   const handleBattle = async () => {
     const result = await initiateBattle(userId, opponentId);
     setBattleResult(result);
+  };
+
+  const getRarityColorClass = (rarity) => {
+    switch (rarity) {
+      case "common":
+        return "text-gray-500"; // Example color for common rarity
+      case "rare":
+        return "text-blue-500"; // Example color for rare rarity
+      case "epic":
+        return "text-purple-500"; // Example color for epic rarity
+      case "legendary":
+        return "text-yellow-500"; // Example color for legendary rarity
+      default:
+        return "text-black"; // Default color
+    }
   };
 
   return (
@@ -186,30 +208,54 @@ const App = () => {
           {encounteredPokemon && (
             <div className="mt-6 flex flex-col items-center">
               <h2 className="text-2xl font-bold">
-                You encountered a {encounteredPokemon.name}!
+                You encountered a{" "}
+                <span
+                  className={getRarityColorClass(encounteredPokemon.rarity)}
+                >
+                  {encounteredPokemon.name}
+                </span>
+                !
               </h2>
               <img
                 src={encounteredPokemon.sprite}
                 alt={encounteredPokemon.name}
                 className="w-36"
               />
-              <button
-                onClick={handleCatchPokemon}
-                className="mt-4 bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700 transition duration-300"
-              >
-                Catch!
-              </button>
+              <div>
+                <button
+                  onClick={handleCatchPokemon}
+                  className="mt-4 m-4 bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700 transition duration-300"
+                >
+                  Catch!
+                </button>
+                <button
+                  onClick={rollAgain}
+                  className="mt-4 bg-orange-600 text-white py-2 px-4 rounded-md hover:bg-orange-700 transition duration-300"
+                >
+                  Roll Again
+                </button>
+              </div>
             </div>
           )}
           {battleResult && (
             <div className="mt-6 flex flex-col items-center">
+              <button
+                className="relative left-60 text-gray-600 hover:text-gray-900"
+                onClick={() => setBattleResult(null)}
+              >
+                X
+              </button>
               <h2 className="text-2xl font-bold mb-4">Battle Result</h2>
               <p className="mb-4">{battleResult.battleResult}</p>
               <div className="flex justify-center space-x-16 mb-4">
                 <div className="text-center">
-                  <h3 className="font-bold mb-2 text-green-600">Your Pokemon</h3>
+                  <h3 className="font-bold mb-2 text-green-600">
+                    Your Pokemon
+                  </h3>
                   <p className="mb-2">{battleResult.user_pokemon.name}</p>
-                  <p className="mb-2">Power: {battleResult.user_pokemon.power}</p>
+                  <p className="mb-2">
+                    Power: {battleResult.user_pokemon.power}
+                  </p>
                   <img
                     src={battleResult.user_pokemon.sprite}
                     alt={battleResult.user_pokemon.name}
@@ -217,9 +263,13 @@ const App = () => {
                   />
                 </div>
                 <div className="text-center">
-                  <h3 className="font-bold mb-2 text-red-600">{opponentId}'s Pokemon</h3>
+                  <h3 className="font-bold mb-2 text-red-600">
+                    {opponentId}'s Pokemon
+                  </h3>
                   <p className="mb-2">{battleResult.opponent_pokemon.name}</p>
-                  <p className="mb-2">Power: {battleResult.opponent_pokemon.power}</p>
+                  <p className="mb-2">
+                    Power: {battleResult.opponent_pokemon.power}
+                  </p>
                   <img
                     src={battleResult.opponent_pokemon.sprite}
                     alt={battleResult.opponent_pokemon.name}
