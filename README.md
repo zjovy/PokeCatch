@@ -16,8 +16,7 @@ Video Demo: [https://www.youtube.com/watch?v=ysIAQj9P2qc](url)
 
 - Get Pokedexes of a region: `https://pokeapi.co/api/v2/region/{id or name}/`
 - Get Pokemon entries from pokedex id: `https://pokeapi.co/api/v2/pokedex/{id or name}/`
-- Use name to get info: `https://pokeapi.co/api/v2/pokemon/{id or name}/`
-- Check evolves_from_species: `https://pokeapi.co/api/v2/pokemon-species/{id or name}`
+- Use name to get info: `https://pokeapi.co/api/v2/pokemon/{id or name}/` and `https://pokeapi.co/api/v2/pokemon-species/{id or name}`
 
 ## Database Schema
 
@@ -69,14 +68,18 @@ Users can battle each other by selecting a Pokemon from their inventory. The win
 
 ## How to Run
 
-1. **Set Up MySQL Database**
+1. **Set Up MySQL Database with Amazon RDS**
    - Create the tables as described in the database schema.
    
-2. **Configure Lambda Functions**
+2. **Configure AWS Lambda Functions**
    - Set up the lambda functions to interact with the PokeAPI and your MySQL database.
+   - Modify the config files
+   - Upload the lambda functions included to your AWS Lambda
 
 3. **Front-End Integration**
-   - Integrate the lambda functions with the front-end to handle user interactions and display Pokemon data.
+   - Clone this repo for the front-end
+   - Install React.js and Tailwind CSS
+   - Run the project with vite
 
 ## Contributing
 
