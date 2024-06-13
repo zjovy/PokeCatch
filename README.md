@@ -5,6 +5,7 @@
 PokeCatch is a simple Pokemon-inspired Gatcha Game utilizing the public PokeAPI for all Pokemon data. This project was developed by Jovy Zhou, Sean Lee, and Richard Yang.
 
 Video demo: https://www.youtube.com/watch?v=ysIAQj9P2qc
+
 More detailed overview: https://docs.google.com/document/d/1WCoSUYJ0rgylml2ihu8RuewZcZNOK4rV9eiCrnulPT8/edit?usp=sharing
 
 ## Features
